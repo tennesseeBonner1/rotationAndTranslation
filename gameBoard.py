@@ -1,8 +1,8 @@
 import pygame
 import time
 import sys
-import rotation
-import translation
+from rotation import *
+from translation import *
 import piece
 import game
 import board
@@ -137,24 +137,21 @@ while True:
 
         #The piece is rotated in the direction of input until space is pushed
         if (keys[0] == True):
-            rotation.rotationRoutine(currentPiece, 2)
+            rotationRoutine(currentPiece, 2)
             keys[0] = False
         if (keys[1] == True):
-            rotation.rotationRoutine(currentPiece, 0)
+            rotationRoutine(currentPiece, 0)
             keys[1] = False
         if (keys[2] == True):
-            rotation.rotationRoutine(currentPiece, 3)
+            rotationRoutine(currentPiece, 3)
             keys[2] = False
         if (keys[3] == True):
-            rotation.rotationRoutine(currentPiece, 1)
+            rotationRoutine(currentPiece, 1)
             keys[3] = False
         if (keys[4] == True):
-            print("Rotated piece \n" + str(currentPiece.getPiece()))
-            rotation.finishRotation(currentPiece)
-            print("Condensed piece \n" + str(currentPiece.getPiece()))
+            finishRotation(currentPiece)
             keys[4] = False
-            rotation.postRotation(currentTurn, boardList, currentPiece)
-            print("Board sized piece ready to translate \n" + str(boardList[currentTurn].getPiece().getPiece()))
+            postRotation(currentTurn, boardList, currentPiece)
             gameStage = Stage.TRANSLATING
             
 
@@ -174,22 +171,23 @@ while True:
 
         if (keys[0] == True):
             print("UP")
-            translation.translationRoutine(boardList[currentTurn])
+            translationRoutine(boardList[currentTurn], 0)
             keys[0] = False
         if (keys[1] == True):
             print("LEFT")
-            translation.translationRoutine(boardList[currentTurn])
+            translationRoutine(boardList[currentTurn], 1)
             keys[1] = False
         if (keys[2] == True):
             print("DOWN")
-            translation.translationRoutine(boardList[currentTurn])
+            translationRoutine(boardList[currentTurn], 2)
             keys[2] = False
         if (keys[3] == True):
             print("RIGHT")
-            translation.translationRoutine(boardList[currentTurn])
+            translationRoutine(boardList[currentTurn], 3)
             keys[3] = False
         if (keys[4] == True):
             print("SPACE PUSHED")
+            attemptDrop(boardList[currentTurn])
             keys[4] = False
             gameStage = Stage.BASKING
            
