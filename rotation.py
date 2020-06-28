@@ -2,7 +2,6 @@ import numpy as np
 import copy
 from util import *
 
-
 #Used everytime the piece is rotated in the direction that is passed
 def rotationRoutine(piece, direction):
 
@@ -68,9 +67,7 @@ def rotationRoutine(piece, direction):
 
         piece.setPiece(tempMatrix)
 
-
-#Used when the piece rotation is complete
-def finishRotation(piece):
+def shrinkPiece(piece):
 
     tempMatrix = piece.getPiece()
     smallMatrix = np.full((4, 4, 4), False, dtype=bool)
@@ -124,6 +121,13 @@ def finishRotation(piece):
                     finalMatrix[x][y][z] = copy.deepcopy(smallMatrix[x][testPosition][z])
         testPosition -= 1     
 
+    return finalMatrix
+
+#Used when the piece rotation is complete
+def finishRotation(piece):
+
+    finalMatrix = shrinkPiece(piece)
+    
     #Change the piece
     piece.setPiece(finalMatrix)
 

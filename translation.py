@@ -37,7 +37,7 @@ def translationRoutine(board, direction):
                     cleanPiece[x][y][z] = copy.deepcopy(currentPiece[x][y][z + 1])
 
     if (direction == 2):
-        #(Forward) check cpX dimension for true values 
+        #(Back) check cpX dimension for true values 
         for y in range(0, cpY):
             for z in range(0, cpZ):
                 if (currentPiece[0][y][z] == True):
@@ -49,7 +49,7 @@ def translationRoutine(board, direction):
                     cleanPiece[x][y][z] = copy.deepcopy(currentPiece[x + 1][y][z])
 
     if (direction == 3):
-        #(Forward) check cpX dimension for true values 
+        #(Right)check cpX dimension for true values 
         for x in range(0, cpX):
             for y in range(0, cpY):
                 if (currentPiece[x][y][cpZ - 1] == True):
@@ -58,10 +58,64 @@ def translationRoutine(board, direction):
         for x in range(0, cpX):
             for y in range(0, cpY):
                 for z in range(1, cpZ):
-                    cleanPiece[x][y][z] = copy.deepcopy(currentPiece[x][y][z - 1])
-                    
+                    cleanPiece[x][y][z] = copy.deepcopy(currentPiece[x][y][z - 1])       
     board.getPiece().setPiece(cleanPiece)
 
 #The drop is attempted if it is possible
 def attemptDrop(board):
-	print("Drop Attempted")
+    currentPiece = board.getPiece().getPiece()
+
+    cpX = currentPiece.shape[0]
+    cpY = currentPiece.shape[1]
+    cpZ = currentPiece.shape[2]
+
+    pieceList = []
+
+    #Save pieces in list of there locations with the lowest piece located near x = 0, z = 0 and y = 3
+    for y in range(cpY - 1, -1, -1):
+        for x in range(0, cpX):
+            for z in range(0, cpZ):
+                if (currentPiece[x][y][z] == True):
+                    pieceList.append([x,y,z])
+
+    currentBoard = board.getBoard()
+    #go through board array starting at y = max in the first piece's x and z, y-- until that position is unoccupied, 
+    #then go to the next piece and if it's valid, move onto the next piece, otherwise break, do this until every one of the 
+    #spots have been checked
+    cbX = currentBoard.shape[0]
+    cbY = currentBoard.shape[1]
+    cbZ = currentBoard.shape[2]
+
+    difference = cbY - 4
+    tempPieceList = copy.deepcopy(pieceList)
+
+    for i in range(0, 4):
+        temp = tempPieceList[i][1]
+        tempPieceList[i][1] = temp + difference
+
+    for y in range(cbY - 1, -1, -1):
+        
+        for i in range(0, 4):
+            temp = tempPieceList[i][1]
+            if (y < (cbY - 1)):
+                tempPieceList[i][1] = temp - 1
+            if (tempPieceList[i][1] < 0):
+                return False
+        
+        pieceList = tempPieceList
+
+        works = True
+        for piece in tempPieceList:
+            if (currentBoard[piece[0]][piece[1]][piece[2]] == True):
+                works = False
+                break
+
+        if works:
+            boardCopy = copy.deepcopy(currentBoard)
+
+            for piece in tempPieceList:
+                boardCopy[piece[0]][piece[1]][piece[2]] = True
+
+            board.setBoard(boardCopy)
+            return True
+    return False
