@@ -4,7 +4,7 @@ import copy
 #This translation routine needs to be written
 def translationRoutine(board, direction):
 
-    currentPiece = board.getPiece().getPiece()
+    currentPiece = board.getPiece().getTranslatedPiece()
 
     cpX = currentPiece.shape[0]
     cpY = currentPiece.shape[1]
@@ -59,11 +59,11 @@ def translationRoutine(board, direction):
             for y in range(0, cpY):
                 for z in range(1, cpZ):
                     cleanPiece[x][y][z] = copy.deepcopy(currentPiece[x][y][z - 1])       
-    board.getPiece().setPiece(cleanPiece)
+    board.getPiece().setTranslatedPiece(cleanPiece)
 
 #The drop is attempted if it is possible
-def attemptDrop(board):
-    currentPiece = board.getPiece().getPiece()
+def attemptDrop(boardList, currentTurn):
+    currentPiece = boardList[currentTurn].getPiece().getTranslatedPiece()
 
     cpX = currentPiece.shape[0]
     cpY = currentPiece.shape[1]
@@ -78,7 +78,7 @@ def attemptDrop(board):
                 if (currentPiece[x][y][z] == True):
                     pieceList.append([x,y,z])
 
-    currentBoard = board.getBoard()
+    currentBoard = boardList[currentTurn].getBoard()
     #go through board array starting at y = max in the first piece's x and z, y-- until that position is unoccupied, 
     #then go to the next piece and if it's valid, move onto the next piece, otherwise break, do this until every one of the 
     #spots have been checked
@@ -115,7 +115,10 @@ def attemptDrop(board):
 
             for piece in tempPieceList:
                 boardCopy[piece[0]][piece[1]][piece[2]] = True
+            print("Board's current Turn is " + str(boardList[currentTurn].getTurn()))
 
-            board.setBoard(boardCopy)
+            for i in range(currentTurn, len(boardList)):
+                boardList[i].setBoard(boardCopy)
+
             return True
     return False

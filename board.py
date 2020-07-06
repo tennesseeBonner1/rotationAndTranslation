@@ -15,6 +15,9 @@ class Board:
 	def setPiece(self, updatedPiece):
 		self.currentPiece = updatedPiece
 
+	def getTurn(self):
+		return self.turn
+
 	def __init__(self, x, y, z, turn, currentPiece):
 
 		self.currentBoard = np.full((x, y, z), False, dtype=bool)

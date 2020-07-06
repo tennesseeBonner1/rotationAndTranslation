@@ -3,12 +3,27 @@ import numpy as np
 #Piece that holds the 3D matrix of the current piece
 class Piece:
 
-	def getPiece(self):
-		return self.type
-
-	def setPiece(self, type):
-		self.type = type
+	def getShape(self):
+		return self.shape
 		
+	def getPiece(self):
+		return self.originalMatrix
+
+	def getRotatedPiece(self):
+		return self.rotatedPiece
+
+	def getTranslatedPiece(self):
+		return self.translatedPiece
+
+	def setPiece(self, originalMatrix):
+		self.originalMatrix = originalMatrix
+		
+	def setRotatedPiece(self, rotatedPiece):
+		self.rotatedPiece = rotatedPiece
+
+	def setTranslatedPiece(self, translatedPiece):
+		self.translatedPiece = translatedPiece
+
 	def __init__(self, shape):
 
 		oneC = np.array([[[False,False,False,False,False],[False,False,False,False,False],[False,False,False,False,False],[False,False,False,False,False],[False,False,False,False,False]],[[False,False,False,False,False],[False,False,False,False,False],[False,False,False,False,False],[False,True ,False,True ,False],[False,False,False,False,False]],[[False,False,False,False,False],[False,False,False,False,False],[False,False,False,False,False],[False,False,False,False,False],[False,False,False,False,False]],[[False,False,False,False,False],[False,False,False,True ,False],[False,False,False,False,False],[False,True ,False,False,False],[False,False,False,False,False]],[[False,False,False,False,False],[False,False,False,False,False],[False,False,False,False,False],[False,False,False,False,False],[False,False,False,False,False]] ])
@@ -31,6 +46,9 @@ class Piece:
 			7:t
 		}
 
-		theType = switch.get(shape, "Invalid Piece")
-		self.type = theType
+		theOriginalMatrix = switch.get(shape, "Invalid Piece")
+		self.shape = shape
+		self.originalMatrix = theOriginalMatrix
+		self.rotatedPiece = theOriginalMatrix
+		self.translatedPiece = None
 

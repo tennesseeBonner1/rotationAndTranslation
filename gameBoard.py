@@ -46,6 +46,9 @@ def startGame(pieceCount, boardSize):
             boardList.append(board.Board(boardSize[0], boardSize[1], boardSize[2], turnVal, None))
             turnVal += 1
 
+#input keys for the buttons w,a,s,d,space
+keys = [False, False, False, False, False, False]
+        
 #Enum for the stage that the game is in
 class Stage(Enum):
     BASKING = 0
@@ -55,8 +58,17 @@ class Stage(Enum):
 
 gameStage = Stage.BASKING
 
-#input keys for the buttons w,a,s,d,space
-keys = [False, False, False, False, False]
+def undo(value):
+    keys[5] = False
+    if (value == 0):
+        return Stage.TRANSLATING
+    elif (value == 1):
+        return Stage.BASKING
+    elif (value == 2):
+        return Stage.SELECTING
+    elif (value == 3):
+        return Stage.ROTATING 
+
 
 #Starts the game with a test boardSize and piece array
 startGame(np.array([1,0,2,5,1,2,2,3]) , np.array([4,4,4]))
@@ -89,17 +101,26 @@ while True:
                 if event.key==pygame.K_SPACE:
                     keys[4]=True
                     time.sleep(0.2)
+                if event.key==pygame.K_u:
+                    keys[5]=True
+                    time.sleep(0.2)
 
     #Basking state where you can look at the board
     if (gameStage.value == 0):
+        
+        #If you are out of pieces
         if any(pieceList) == False:
+
             # Draw title
             title = largeFont.render("Congratualtions. You won!", True, white)
             titleRect = title.get_rect()
             titleRect.center = ((width / 2), (height/2))
             screen.blit(title, titleRect)
+
+            #If you then push space the game ends
             if keys[4] == True:
                 sys.exit()
+
         else:
             # Draw title
             title = largeFont.render("Basking State, \"look at that board!\"", True, white)
@@ -108,11 +129,7 @@ while True:
             screen.blit(title, titleRect)
 
             #Get the most recent board
-            if currentTurn == 0:
-                currentBoard = boardList[currentTurn].getBoard()
-
-            else:
-                currentBoard = boardList[currentTurn - 1].getBoard()
+            currentBoard = boardList[currentTurn].getBoard()
 
             #Render the board
             titleRects = []
@@ -143,6 +160,23 @@ while True:
             #Go to the selecting stage when space is pushed
             if (keys[4] == True):
                 gameStage = Stage.SELECTING
+
+            #Undo if you can
+            if (keys[5] == True and currentTurn != 0):
+
+                currentTurn -= 1
+                boardCopy = boardList[currentTurn - 1].getBoard()
+
+                if (currentTurn == 0):
+                    boardCopy = np.full((boardCopy.shape[0], boardCopy.shape[1], boardCopy.shape[2]), False, dtype=bool)
+
+                for i in range(currentTurn, len(boardList)):
+                    boardList[i].setBoard(boardCopy)
+
+                rotatedPiece = boardList[currentTurn].getPiece().getRotatedPiece()
+                boardList[currentTurn].getPiece().setTranslatedPiece(rotatedPiece)
+
+                gameStage = undo(gameStage.value)
 
     #The selecting Routine(Currently only lets you select one piece)
     if (gameStage.value == 1):
@@ -218,6 +252,9 @@ while True:
         tButtonRec.center = tButton.center
         pygame.draw.rect(screen, white,tButton)
         screen.blit(t, tButtonRec)
+
+        if (keys[5] == True):
+            gameStage = undo(gameStage.value)
 
         # Check if button is clicked and react differently for each button
         click, _, _ = pygame.mouse.get_pressed()
@@ -339,13 +376,7 @@ while True:
         for i in range(0, len(titles)):
             screen.blit(titles[i], titleRects[i])
 
-
-        #Get the most recent board
-        if currentTurn == 0:
-            currentBoard = boardList[currentTurn].getBoard()
-
-        else:
-            currentBoard = boardList[currentTurn - 1].getBoard()
+        currentBoard = boardList[currentTurn].getBoard()
 
         boardTitleRects = []
         boardTitles = []
@@ -388,8 +419,18 @@ while True:
         if (keys[4] == True):
             finishRotation(currentPiece)
             keys[4] = False
+            ##Remove the following and have it just move onto translating
             postRotation(currentTurn, boardList, currentPiece)
             gameStage = Stage.TRANSLATING
+        if (keys[5] == True):
+
+            originalPiece = currentPiece.getPiece()
+            currentPiece.setRotatedPiece(originalPiece)
+
+            shape = currentPiece.getShape()
+            pieceList[shape].append(currentPiece)
+            currentPiece = None
+            gameStage = undo(gameStage.value)
             
 
     #If on the translating routine
@@ -407,7 +448,7 @@ while True:
         screen.blit(subTitle, titleRect)
 
         #Get and render the piece
-        printPiece = boardList[currentTurn].getPiece().getPiece()
+        printPiece = boardList[currentTurn].getPiece().getTranslatedPiece()
 
         titleRects = []
         titles = []
@@ -475,13 +516,23 @@ while True:
             translationRoutine(boardList[currentTurn], 3)
             keys[3] = False
         if (keys[4] == True):
-            attempt = attemptDrop(boardList[currentTurn])
+            attempt = attemptDrop(boardList, currentTurn)
 
             if attempt:
                 currentTurn += 1
                 gameStage = Stage.BASKING
 
             keys[4] = False
-           
+
+        if (keys[5] == True):
+            currentPiece = boardList[currentTurn].getPiece()
+            boardList[currentTurn].setPiece(None)
+
+            currentPiece.setTranslatedPiece(None)
+            originalPiece = currentPiece.getPiece()
+            currentPiece.setRotatedPiece(originalPiece)
+
+            gameStage = undo(gameStage.value)
+          
     pygame.display.flip()
 

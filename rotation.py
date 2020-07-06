@@ -6,7 +6,7 @@ from util import *
 def rotationRoutine(piece, direction):
 
     tempBool = None
-    tempMatrix = piece.getPiece()
+    tempMatrix = piece.getRotatedPiece()
 
     #Left
     if(direction == 0):
@@ -19,7 +19,7 @@ def rotationRoutine(piece, direction):
                     tempMatrix[x][z][4 - y] = tempMatrix[x][4 - y][4 - z]
                     tempMatrix[x][4 - y][4 - z] = tempMatrix[x][4 - z][y]
                     tempMatrix[x][4 - z][y] = tempBool
-        piece.setPiece(tempMatrix)
+        piece.setRotatedPiece(tempMatrix)
 
     #Right 
     if(direction == 1):
@@ -35,7 +35,7 @@ def rotationRoutine(piece, direction):
                         tempMatrix[x][4 - y][4 - z] = tempMatrix[x][4 - z][y]
                         tempMatrix[x][4 - z][y] = tempBool
 
-        piece.setPiece(tempMatrix)
+        piece.setRotatedPiece(tempMatrix)
     
     #Forward
     if(direction == 2):
@@ -49,7 +49,7 @@ def rotationRoutine(piece, direction):
                     tempMatrix[4 - x][4 - y][z] = tempMatrix[4 - y][x][z]
                     tempMatrix[4 - y][x][z] = tempBool
 
-        piece.setPiece(tempMatrix)
+        piece.setRotatedPiece(tempMatrix)
 
     #BackWards
     if(direction == 3):
@@ -65,11 +65,11 @@ def rotationRoutine(piece, direction):
                         tempMatrix[4 - x][4 - y][z] = tempMatrix[4 - y][x][z]
                         tempMatrix[4 - y][x][z] = tempBool
 
-        piece.setPiece(tempMatrix)
+        piece.setRotatedPiece(tempMatrix)
 
 def shrinkPiece(piece):
 
-    tempMatrix = piece.getPiece()
+    tempMatrix = piece.getRotatedPiece()
     smallMatrix = np.full((4, 4, 4), False, dtype=bool)
 
     #This is the order in which 2D slices of the 3D matrix are checked and removed
@@ -129,7 +129,7 @@ def finishRotation(piece):
     finalMatrix = shrinkPiece(piece)
     
     #Change the piece
-    piece.setPiece(finalMatrix)
+    piece.setRotatedPiece(finalMatrix)
 
 
 #Take the curent piece, change it to be as wide and deep as board with piece in center, then attatch it to the board
@@ -158,7 +158,7 @@ def postRotation(currentTurn, boardList, currentPiece):
     newPiece = np.full((xDim, 4, zDim), False, dtype=bool)
 
     #The old piece is mapped to a new piece that is wide and as deep as the board
-    oldPiece = currentPiece.getPiece()
+    oldPiece = currentPiece.getRotatedPiece()
 
     offsetX = 0
     for x in range (xStart, (xStart+4)):
@@ -172,7 +172,8 @@ def postRotation(currentTurn, boardList, currentPiece):
         offsetX += 1
 
     #The currentPiece is set to this new board sized piece
-    currentPiece.setPiece(newPiece)
+    currentPiece.setRotatedPiece(newPiece)
+    currentPiece.setTranslatedPiece(newPiece)
 
     #This piece is attatched to the board
     boardList[currentTurn].setPiece(currentPiece)
