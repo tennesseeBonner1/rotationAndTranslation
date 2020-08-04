@@ -1,6 +1,6 @@
 # Rotation and Translation
 
-This program uses matrices to rotate 3D tetronimo-like pieces and translate them to be dropped into a board larger or equal to 4x4x4. This acts as the backend for a 3D tetris like puzzle game. 
+This program uses matrices to rotate 3D tetronimo-like pieces and translate them to be dropped into a board larger or equal to 4x4x4. This acts as the back end for a 3D tetris-like puzzle game. 
 
 ## Getting Started
 
